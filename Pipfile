@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+include-system-site-packages = true
+
+[dev-packages]
+
+[packages]
+kafka-python = "*"
+pandas = "*"
+numpy = "*"
+mysqlclient = "*"
+sqlalchemy = "*"
+
+
+[requires]
+python_version = "3.9"
