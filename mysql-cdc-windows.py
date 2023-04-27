@@ -42,7 +42,9 @@ kafka_zookeeper_connection_timeout_ms = \
 kafka_group_initial_rebalance_delay_ms = \
     kafka_con.get('kafka', 'group.initial.rebalance.delay.ms')
 
-producer = KafkaProducer(bootstrap_servers=[kafka_bootstrap_servers])
+producer = KafkaProducer(
+    bootstrap_servers=[kafka_bootstrap_servers],
+    value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
 # Asynchronous by default
 future = producer.send(py_config.database_kafka_topic, b'raw_bytes')
