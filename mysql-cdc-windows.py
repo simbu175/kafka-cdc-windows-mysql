@@ -4,6 +4,7 @@ import pandas
 from kafka import KafkaConsumer
 from kafka import KafkaProducer
 from kafka import KafkaClient
+from kafka.admin import KafkaAdminClient, NewTopic
 from kafka.errors import KafkaError
 import configparser
 from config import py_config
@@ -42,12 +43,17 @@ kafka_zookeeper_connection_timeout_ms = \
 kafka_group_initial_rebalance_delay_ms = \
     kafka_con.get('kafka', 'group.initial.rebalance.delay.ms')
 
+msg_bytes = b'raw_byes'
+msg_str = msg_bytes.decode('utf-8')
+msg_dict = {'message': msg_str}
+msg_json = json.dumps(msg_dict)
+
 producer = KafkaProducer(
     bootstrap_servers=[kafka_bootstrap_servers],
     value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
 # Asynchronous by default
-future = producer.send(py_config.database_kafka_topic, b'raw_bytes')
+future = producer.send(py_config.database_kafka_topic, msg_json.encode('utf-8'))
 
 try:
     record_metadata = future.get(timeout=10)
@@ -74,6 +80,19 @@ for message in consumer:
     message_data = message.value
     # process the message_data as per your requirement
 
+# Create a Kafka admin client
+admin_client = KafkaAdminClient(bootstrap_servers='localhost:9092')
+#
+topic_config = {
+    'cleanup.policy': 'delete',
+    'compression.type': 'gzip',
+    'retention.ms': '86400000',
+    'segment.bytes': '1073741824'
+}
+
+# Create a new Kafka topic
+new_topic = NewTopic(name='my-topic', num_partitions=3, replication_factor=1, config=topic_config)
+admin_client.create_topics(new_topics=[new_topic])
 
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
