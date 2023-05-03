@@ -3,7 +3,7 @@ show databases;
 drop database if exists local_db;
 create database local_db;
 
-CREATE USER 'local_user' IDENTIFIED BY 'Lumia@820';
+CREATE USER 'local_user' IDENTIFIED BY '';
 GRANT SELECT ON local_db.* TO 'local_user';
 GRANT SELECT ON sakila.* TO 'local_user';
 GRANT SELECT ON world.* TO 'local_user';
